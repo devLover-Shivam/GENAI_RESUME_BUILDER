@@ -10,7 +10,7 @@ const jwt = require("jsonwebtoken");
 */
 async function registerUserController(req,res){
     //destructure and get the username,email,password
-
+    const {username,email,password} = req.body;
     if(!username || !email || !password){
         return res.status(400).json({
             message: "Please provide username, email and password"
