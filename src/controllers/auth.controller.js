@@ -56,5 +56,50 @@ async function registerUserController(req,res){
     })
 
 }
+/** 
+ * @name loginUserController
+ * @description login a existing user
+ * @access Public
+*/
+async function loginUserController(req,res){
+    const {email,password}=  req.body
+    const user = await userModel.findOne({email})
+    //check whether user even exists or not
+    if(!user){
+        return res.status(400).json({
+            message:"Invalid Email or Password"
+        })
+    }
+    //check entered password is valid or not
+    const isPasswordValid = bcrypt.compare(password,user.password);
 
-module.exports = {registerUserController};
+    if(!isPasswordValid){
+        return res.status(400).json({
+            message:"Invalid Email or Password"
+        })
+    }
+
+    //now create and set the token to cookie
+
+     const token = jwt.sign(
+        {id:user._id, username: user.username},
+        process.env.JWT_SECRET_KEY,
+        {expiresIn:"2d"}
+    )
+    
+    res.cookie("token",token);
+
+    res.status(201).json({
+        message:"User Logged In Successfully!",
+        user:{
+            id:user._id,
+            username:user.username,
+            email:user.email,
+        }
+    })
+
+}
+
+module.exports = {registerUserController,
+    loginUserController
+};
