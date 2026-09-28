@@ -65,14 +65,20 @@ export const useAuth = () => {
         // Tell the Context that an authentication operation has started
         setLoading(true);
 
-        // Call the login API and receive the backend response
-        const data = await login({ email, password });
+        try{
+            // Call the login API and receive the backend response
+            const data = await login({ email, password });
 
-        // Store the logged-in user's information in global state
-        setUser(data.user);
+            // Store the logged-in user's information in global state
+            setUser(data.user);
+        }catch(err){
 
-        // Tell the Context that the authentication operation is complete
-        setLoading(false);
+        }finally{
+            // Tell the Context that the authentication operation is complete
+            setLoading(false);
+        }
+
+        
     };
 
 
@@ -82,18 +88,24 @@ export const useAuth = () => {
         // Tell the Context that registration is currently in progress
         setLoading(true);
 
-        // Call the register API and receive the backend response
-        const data = await register({
-            username,
-            email,
-            password
-        });
+        try {
+            // Call the register API and receive the backend response
+            const data = await register({
+                username,
+                email,
+                password
+            });
 
-        // Store the newly registered user's information in global state
-        setUser(data.user);
+            // Store the newly registered user's information in global state
+            setUser(data.user);
+        } catch (err) {
+            
+        } finally{
+                // Tell the Context that registration is complete
+                setLoading(false);
+        }
 
-        // Tell the Context that registration is complete
-        setLoading(false);
+        
     };
 
 
@@ -103,14 +115,20 @@ export const useAuth = () => {
         // Tell the Context that logout is currently in progress
         setLoading(true);
 
-        // Call the logout API to invalidate the user's session/token
-        await logout();
+        try {
+            // Call the logout API to invalidate the user's session/token
+            await logout();
 
-        // Remove the user from global authentication state
-        setUser(null);
+            // Remove the user from global authentication state
+            setUser(null);
+        } catch (err) {
+            
+        }finally{
+            // Tell the Context that logout is complete
+            setLoading(false);
+        }
 
-        // Tell the Context that logout is complete
-        setLoading(false);
+        
     };
 
 
