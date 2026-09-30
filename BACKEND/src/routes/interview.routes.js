@@ -12,3 +12,5 @@ const upload = require("../middlewares/file.middleware");
   */
 
 interviewRouter.post("/",authMiddleware.authUser,upload.single("resume"),interviewController.generateInterViewReportController);
+
+module.exports = interviewRouter

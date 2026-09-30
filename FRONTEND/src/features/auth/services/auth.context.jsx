@@ -1,4 +1,4 @@
-import { createContext, useState,useEffect } from "react";
+import { createContext, useState } from "react";
 import { getMe } from "./auth.api";
 
 /*
@@ -32,17 +32,6 @@ export const AuthProvider = ({ children }) => {
     // Tracks whether authentication-related data is currently being loaded
     // false means that nothing is currently loading
     const [loading, setLoading] = useState(true);
-
-    useEffect(()=>{
-        const getAndSetUser = async()=>{
-            const data  = await getMe();
-            setUser(data.user)
-            setLoading(false)
-        }
-        getAndSetUser()
-    },[])
-
-
     // Provide authentication state and its update functions to all child components
     return (
         <AuthContext.Provider

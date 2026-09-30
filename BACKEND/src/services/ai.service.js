@@ -5,6 +5,27 @@ const {zodToJsonSchema} = require("zod-to-json-schema");
 
 const ai = new GoogleGenAI({apiKey:process.env.GOOGLE_GENAI_API_KEY});
 
+async function withRetry(fn, maxRetries = 4, baseDelayMs = 2000) {
+  let lastError;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const isUnavailable =
+        err?.status === 503 ||
+        err?.error?.code === 503 ||
+        err?.error?.status === 'UNAVAILABLE' ||
+        (err?.message && err.message.includes('503'));
+      if (!isUnavailable || attempt === maxRetries) throw err;
+      const delayMs = baseDelayMs * Math.pow(2, attempt);
+      console.log(`[GenAI] Model unavailable, retrying in ${delayMs / 1000}s... (attempt ${attempt + 1}/${maxRetries})`);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+      lastError = err;
+    }
+  }
+  throw lastError;
+}
+
 const interviewReportSchema = z.object({
 
     matchScore: z
@@ -103,7 +124,7 @@ ${selfDescription}
 JOB DESCRIPTION:
 ${jobDescription}
 `;
-    const response = await ai.models.generateContent({
+    const response = await withRetry(() => ai.models.generateContent({
         model: "gemini-3.8-flash",
         contents:prompt,
         config:{
@@ -112,7 +133,7 @@ ${jobDescription}
     target: "jsonSchema7"
 })
         }
-    })
+    }));
     return JSON.parse(response.text);
 }
 

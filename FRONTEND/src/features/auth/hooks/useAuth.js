@@ -30,7 +30,7 @@
  * UI Components
  */
 
-import { useContext } from "react";
+import { useContext,useEffect } from "react";
 
 // Import the authentication context to access global auth state
 import { AuthContext } from "../services/auth.context";
@@ -130,6 +130,19 @@ export const useAuth = () => {
 
         
     };
+
+    useEffect(()=>{
+        const getAndSetUser = async()=>{
+            try{
+                const data = await getMe()
+                setUser(data.user)
+            }catch(err){}finally{
+                setLoading(false)
+            }
+            
+        }
+        getAndSetUser()
+    },[])
 
 
     // Expose authentication state and handlers to UI components
