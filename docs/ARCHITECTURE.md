@@ -218,7 +218,11 @@ erDiagram
     string focus
     string tasks
   }
-  BLACKLIST_TOKEN { string token; datetime createdAt; datetime updatedAt }
+  BLACKLIST_TOKEN {
+    string token
+    datetime createdAt
+    datetime updatedAt
+  }
 ```
 
 Mongoose collections are created from models: `users`, `blacklistTokens`, and `InterviewReport` (Mongoose's normal collection-name pluralization applies). User and report association is represented by the report's `user` ObjectId reference. Report timestamps are enabled; user timestamps are not. Question/skill subdocuments disable their own `_id`; preparation-plan entries use the default subdocument ID. The match score is constrained from 0 through 100, and skill severity is one of `low`, `medium`, or `high`.
